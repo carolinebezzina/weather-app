@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+	<script type="text/javascript" src="weatherScript.js"></script>
+	<link rel="stylesheet" type="text/css" href="weatherStyle.css">
+</head>
+<body>
+    <div ng-app="weatherApp">
+        <div ng-controller="weatherCtrl">
+			<div class="container">
+				<div class="nav">
+					<ul ng-init="getWeather(2158177)">
+						<li ng-repeat="tab in tabs">
+							<a href id={{tab.ID}} ng-click="getWeather(tab.ID)">{{tab.Name}}</a>
+						</li>
+					</ul>
+				</div>
+				<div class="loading" ng-show="response.city.name == null && failed != true"><h3>Loading weather forecast...</h3></div>
+				<div class="failed" ng-show="failed == true"><h3>Could not retrieve weather forecast</h3></div>
+				<div class="header" ng-if="response.city.name != null">
+					<table>
+					<tr>
+					<td class="left"></td><td><h1>Forecast for {{response.city.name}}</h1></td><td class="right"></td>
+					</tr>
+					<tr>
+					<td><h3><a href ng-click="getPreviousDate()">< Back</h3></td>
+					<td><h3>{{displayDay(response.list[counter].dt * 1000)}} {{response.list[counter].dt * 1000 | date : 'dd/MM/yyyy'}}</h3></td>
+					<td><h3><a href ng-click="getNextDate()">Next ></a></h3></td>
+					</tr>
+					</table>
+				</div>
+				<div class="main">
+					<table ng-if="response.city.name != null">
+						<tr><th class="narrow"></th><th>Time</th><th>Description</th><th>Temperature <span class="smallText">(min / max)</span></th><th>Humidity</th><th>Cloudiness</th><th>Wind Speed</th><th>Rain</th></tr>						
+						<tr ng-repeat="forecast in response.list | filterDate" ng-class-odd="'odd'" ng-class-even="'even'">
+							<td class="narrow"><img ng-src="{{getIcon(forecast.weather[0].icon)}}"></td>
+							<td>{{forecast.dt * 1000 | date : 'h:mm a'}}</td>
+							<td class="capitalise">{{forecast.weather[0].description}}</td>
+							<td>{{forecast.main.temp}}&deg;C <span class="smallText">({{forecast.main.temp_min}}&deg;C / {{forecast.main.temp_max}}&deg;C)</span></td>
+							<td>{{forecast.main.humidity}}%</td>
+							<td>{{forecast.clouds.all}}%</td>
+							<td>{{forecast.wind.speed}} m/s</td>
+							<td ng-if="forecast['rain']['3h']">{{forecast['rain']['3h'] | number : 2}} mm</td>
+							<td ng-if="!forecast['rain']['3h']">0.00 mm</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+        </div>
+	</div>
+</body>
+</html> 
